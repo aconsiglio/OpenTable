@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CostcoProject</string>
+    <string name="city_search">City</string>
 </resources>
