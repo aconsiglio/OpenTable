@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.costcoproject.CostcoApplication
 import com.example.costcoproject.Networker.RestaurantEntry
 import com.example.costcoproject.R
@@ -14,6 +16,24 @@ class RestaurantDetailedFragment: BaseFragment() {
 
     private lateinit var restaurantEntry: RestaurantEntry
     private var id: Int? = null
+    private var cost: Int? = null
+        set(value) {
+            when (value) {
+                1 -> showOneStar()
+                2 -> showTwoStar()
+                3 -> showThreeStar()
+                4 -> showFourStar()
+                else -> showNoStars()
+            }
+            field = value
+        }
+
+    private var phone: String = ""
+        set(value) {
+            val str = value.split("x")
+            field = str[0]
+            phoneNumber.text = "+1$field"
+        }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         arguments?.let {
@@ -27,12 +47,55 @@ class RestaurantDetailedFragment: BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        context?.let {
+            Glide.with(it)
+                .load(restaurantEntry.image_url)
+                .apply(RequestOptions.centerCropTransform())
+                .into(fullImage)
+        }
         uiScope.launch {
+            cost = restaurantEntry.price.toInt()
             name.text = restaurantEntry.name
-            address.text = restaurantEntry.address
-            phoneNumber.text = restaurantEntry.phone
+            address.text = "${restaurantEntry.address}, ${restaurantEntry.city}, ${restaurantEntry.state} ${restaurantEntry.postal_code}"
+            phone = restaurantEntry.phone
         }
     }
+
+    private fun showOneStar() {
+        price1.visibility = View.VISIBLE
+        price2.visibility = View.GONE
+        price3.visibility = View.GONE
+        price4.visibility = View.GONE
+    }
+
+    private fun showTwoStar() {
+        price1.visibility = View.VISIBLE
+        price2.visibility = View.VISIBLE
+        price3.visibility = View.GONE
+        price4.visibility = View.GONE
+    }
+
+    private fun showThreeStar() {
+        price1.visibility = View.VISIBLE
+        price2.visibility = View.VISIBLE
+        price3.visibility = View.VISIBLE
+        price4.visibility = View.GONE
+    }
+
+    private fun showFourStar() {
+        price1.visibility = View.VISIBLE
+        price2.visibility = View.VISIBLE
+        price3.visibility = View.VISIBLE
+        price4.visibility = View.VISIBLE
+    }
+
+    private fun showNoStars() {
+        price1.visibility = View.GONE
+        price2.visibility = View.GONE
+        price3.visibility = View.GONE
+        price4.visibility = View.GONE
+    }
+
 
     companion object {
 
