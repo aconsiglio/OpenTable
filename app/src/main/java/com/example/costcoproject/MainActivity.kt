@@ -15,10 +15,10 @@ import com.example.costcoproject.fragments.RestaurantDetailedFragment
 import com.example.costcoproject.fragments.ResultsFragment
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_AppCompat_Light_NoActionBar)
+        //setTheme(R.style.Theme_AppCompat_Light_NoActionBar)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         arrowView?.setOnClickListener {
@@ -26,10 +26,7 @@ class MainActivity : AppCompatActivity() {
             VolleyNetworker.retrieveRestaurants(applicationContext, input, { response ->
                 val appState = applicationContext as CostcoApplication
                 appState.findRestaurantsResponse = response
-                switchFragment(FragmentNavigation.RESULTS)
-/*                response.restaurants.forEach {
-                    Log.d("TestTest", "$it")
-                }*/
+                switchFragment(FragmentNavigation.Results)
             }, { volleyError ->
                 Log.d("TestTest", "$volleyError")
             })
@@ -38,36 +35,39 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        switchFragment(FragmentNavigation.SEARCH)
+    }
+
+    override fun onRestaurantSelected(id: Int) {
+        switchFragment(FragmentNavigation.Detailed(id))
     }
 
     private fun switchFragment(navigation: FragmentNavigation) {
         val transaction = supportFragmentManager.beginTransaction()
         when (navigation) {
-            FragmentNavigation.SEARCH -> {
+            FragmentNavigation.Search -> {
                 transaction.replace(R.id.container, SearchFragment.newInstance())
                 transaction.addToBackStack(SearchFragment.NAME)
             }
-            FragmentNavigation.RESULTS -> {
+            FragmentNavigation.Results -> {
                 transaction.replace(R.id.container, ResultsFragment.newInstance())
                 transaction.addToBackStack(ResultsFragment.NAME)
             }
-            FragmentNavigation.DETAILED -> {
-                transaction.replace(R.id.container, RestaurantDetailedFragment.newInstance())
+            is FragmentNavigation.Detailed -> {
+                transaction.replace(R.id.container, RestaurantDetailedFragment.newInstance(navigation.id))
                 transaction.addToBackStack(RestaurantDetailedFragment.NAME)
             }
-            FragmentNavigation.ERROR -> {
+            FragmentNavigation.Error -> {
                 transaction.replace(R.id.container, ErrorFragment.newInstance())
                 transaction.addToBackStack(ErrorFragment.NAME)
             }
         }
-        transaction.commitAllowingStateLoss()
+        transaction.commit()
     }
 }
 
-enum class FragmentNavigation {
-    SEARCH,
-    RESULTS,
-    ERROR,
-    DETAILED
+sealed class FragmentNavigation {
+    object Search : FragmentNavigation()
+    object Results : FragmentNavigation()
+    data class Detailed(val id: Int) : FragmentNavigation()
+    object Error : FragmentNavigation()
 }
