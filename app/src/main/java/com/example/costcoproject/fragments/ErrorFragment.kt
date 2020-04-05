@@ -9,7 +9,7 @@ class ErrorFragment: BaseFragment() {
         private const val ARG_ERROR_KEY = "arg-error=key"
 
         @JvmStatic
-        fun newInstance(errorStr: String?) = ErrorFragment().apply {
+        fun newInstance(errorStr: String? = null) = ErrorFragment().apply {
             arguments = Bundle().apply {
                 errorStr?.let {
                     putString(ARG_ERROR_KEY, it)
