@@ -16,5 +16,4 @@ class LoadingFragment : BaseFragment() {
         @JvmStatic
         fun newInstance() = LoadingFragment()
     }
-
 }

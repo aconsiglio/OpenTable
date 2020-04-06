@@ -24,9 +24,12 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
             VolleyNetworker.retrieveRestaurants(applicationContext, hint, input, { response ->
                 val appState = applicationContext as CostcoApplication
                 appState.findRestaurantsResponse = response
-                switchFragment(FragmentNavigation.Results)
+                when (response.restaurants.size) {
+                    0 -> switchFragment(FragmentNavigation.None)
+                    else -> switchFragment(FragmentNavigation.Results)
+                }
             }, { volleyError ->
-                Log.d("TestTest", "$volleyError")
+                switchFragment(FragmentNavigation.Error(volleyError.message ?: volleyError.toString()))
             })
         }
         switchFragment(FragmentNavigation.Home)
@@ -42,6 +45,7 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
 
     private fun switchFragment(navigation: FragmentNavigation) {
         val transaction = supportFragmentManager.beginTransaction()
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         hideLoading()
         when (navigation) {
             FragmentNavigation.Back -> {
@@ -58,13 +62,12 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
             }
             is FragmentNavigation.Detailed -> {
                 val name = RestaurantDetailedFragment.NAME
-                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 transaction.setCustomAnimations(0, 0, R.anim.enter_from_left, R.anim.exit_to_left)
                 transaction.replace(R.id.container, RestaurantDetailedFragment.newInstance(navigation.id))
                 transaction.addToBackStack(name)
             }
-            FragmentNavigation.Error -> {
-                transaction.replace(R.id.container, ErrorFragment.newInstance())
+            is FragmentNavigation.Error -> {
+                transaction.replace(R.id.container, ErrorFragment.newInstance(navigation.error))
                 transaction.addToBackStack(ErrorFragment.NAME)
             }
             FragmentNavigation.Loading -> {
@@ -72,6 +75,10 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
                 transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 transaction.add(R.id.container, LoadingFragment.newInstance(), name)
                 transaction.addToBackStack(name)
+            }
+            FragmentNavigation.None -> {
+                transaction.replace(R.id.container, NoResultsFragment.newInstance())
+                transaction.addToBackStack(NoResultsFragment.NAME)
             }
         }
         transaction.commit()
@@ -86,8 +93,9 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
 sealed class FragmentNavigation {
     object Results : FragmentNavigation()
     data class Detailed(val id: Int) : FragmentNavigation()
-    object Error : FragmentNavigation()
+    data class Error(val error: String) : FragmentNavigation()
     object Loading : FragmentNavigation()
     object Back : FragmentNavigation()
     object Home: FragmentNavigation()
+    object None: FragmentNavigation()
 }

@@ -1,7 +1,6 @@
 package com.example.costcoproject.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +32,7 @@ class RestaurantDetailedFragment: BaseFragment() {
         set(value) {
             val str = value.split("x")
             field = str[0]
-            phoneNumber.text = "+1$field"
+            phoneNumber.text = context?.getString(R.string.phone_concat, "+1", field)
         }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,7 +56,7 @@ class RestaurantDetailedFragment: BaseFragment() {
         uiScope.launch {
             cost = restaurantEntry?.price?.toInt()
             name.text = restaurantEntry?.name
-            address.text = "${restaurantEntry?.address}, ${restaurantEntry?.city}, ${restaurantEntry?.state} ${restaurantEntry?.postal_code}"
+            address.text = context?.getString(R.string.address_concat , "${restaurantEntry?.address}", "${restaurantEntry?.city}", "${restaurantEntry?.state}", "${restaurantEntry?.postal_code}")
             phone = restaurantEntry?.phone ?: ""
         }
     }

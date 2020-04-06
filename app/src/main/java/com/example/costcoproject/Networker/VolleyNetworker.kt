@@ -1,6 +1,7 @@
 package com.example.costcoproject.Networker
 
 import android.content.Context
+import android.util.Log
 import com.android.volley.*
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -22,7 +23,9 @@ class VolleyNetworker {
             val postRequest = object : StringRequest(
                 Method.GET, url,
                 Response.Listener<String> { response ->
+                    Log.d("TestTest", "$response")
                     val findRestaurantsResponse = Gson().fromJson(response, FindRestaurantsResponse::class.java)
+                    Log.d("TestTest", "$findRestaurantsResponse")
                     onSuccess(findRestaurantsResponse)
                 },
                 Response.ErrorListener { volleyError ->

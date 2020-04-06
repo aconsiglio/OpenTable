@@ -13,4 +13,8 @@
     <string name="city_example"> City - (ex.: Chicago)</string>
     <string name="zip_example">Zip - (ex: 60601)</string>
     <string name="country_example">Country - Country Code (ex: US)</string>
+    <string name="phone_concat">%1$s%2$s</string>
+    <string name="no_results_found">No results were found for the given input.\n\nEither there are no entries for this search or the input was entered incorrectly.</string>
+    <string name="address_concat">%1$s, %2$s, %3$s, %4$s</string>
+    <string name="error_occurred">An error has occurred %1$s</string>
 </resources>
