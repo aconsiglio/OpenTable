@@ -1,6 +1,7 @@
 package com.example.costcoproject.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class RestaurantDetailedFragment: BaseFragment() {
 
-    private lateinit var restaurantEntry: RestaurantEntry
+    private var restaurantEntry: RestaurantEntry? = null
     private var id: Int? = null
     private var cost: Int? = null
         set(value) {
@@ -40,7 +41,7 @@ class RestaurantDetailedFragment: BaseFragment() {
             id = it.getInt(ARG_ID_KEY)
         }
         id?.let {
-            restaurantEntry = CostcoApplication.instance.restaurants.filter{ restaurant -> restaurant.id == it  }.first()
+            restaurantEntry = CostcoApplication.instance.restaurants.filter{ restaurant -> restaurant.id == it  }.firstOrNull()
         }
         return inflater.inflate(R.layout.fragment_restaurant_detailed, container, false)
     }
@@ -49,15 +50,15 @@ class RestaurantDetailedFragment: BaseFragment() {
         super.onResume()
         context?.let {
             Glide.with(it)
-                .load(restaurantEntry.image_url)
+                .load(restaurantEntry?.image_url)
                 .apply(RequestOptions.centerCropTransform())
                 .into(fullImage)
         }
         uiScope.launch {
-            cost = restaurantEntry.price.toInt()
-            name.text = restaurantEntry.name
-            address.text = "${restaurantEntry.address}, ${restaurantEntry.city}, ${restaurantEntry.state} ${restaurantEntry.postal_code}"
-            phone = restaurantEntry.phone
+            cost = restaurantEntry?.price?.toInt()
+            name.text = restaurantEntry?.name
+            address.text = "${restaurantEntry?.address}, ${restaurantEntry?.city}, ${restaurantEntry?.state} ${restaurantEntry?.postal_code}"
+            phone = restaurantEntry?.phone ?: ""
         }
     }
 

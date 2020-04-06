@@ -12,12 +12,13 @@ class VolleyNetworker {
     companion object {
         fun retrieveRestaurants(
             context: Context,
-            city: String,
+            searchParam: String,
+            searchType: String,
             onSuccess: (FindRestaurantsResponse) -> Unit,
             onFailure: (VolleyError) -> Unit
         ) {
             val queue = Volley.newRequestQueue(context)
-            val url = "https://opentable.herokuapp.com/api/restaurants?city=${city}"
+            val url = "https://opentable.herokuapp.com/api/restaurants?${searchParam}=${searchType}"
             val postRequest = object : StringRequest(
                 Method.GET, url,
                 Response.Listener<String> { response ->

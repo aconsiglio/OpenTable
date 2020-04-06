@@ -2,7 +2,6 @@ package com.example.costcoproject.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +45,7 @@ class ResultsFragment: BaseFragment() {
         val gson = Gson()
         val jsonElement = gson.toJsonTree(findRestaurantsResponse!!.restaurants)
         val restaurants =  Gson().fromJson(jsonElement, Array<RestaurantEntry>::class.java).toMutableList()
-        CostcoApplication.instance.restaurants = restaurants
+        CostcoApplication.instance.restaurants.addAll(restaurants)
         uiScope.launch {
             resultsRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)

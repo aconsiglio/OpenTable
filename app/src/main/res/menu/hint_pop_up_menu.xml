@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/name"
+        android:title="@string/name_search"
+        />
+
+    <item
+        android:id="@+id/state"
+        android:title="@string/state_search"
+        />
+
+    <item
+        android:id="@+id/city"
+        android:title="@string/city_search"
+        />
+
+    <item
+        android:id="@+id/zip"
+        android:title="@string/zip_search"
+        />
+
+    <item
+        android:id="@+id/country"
+        android:title="@string/country_search"
+        />
+
+    <item
+        android:id="@+id/address"
+        android:title="@string/address_search"
+        />
+</menu>

@@ -3,26 +3,25 @@ package com.example.costcoproject
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.EditText
 import com.example.costcoproject.Networker.VolleyNetworker
 import kotlinx.android.synthetic.main.search_bar_view.*
 
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.costcoproject.fragments.*
+import java.util.*
 
 
-class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedListener{
+class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         arrowView?.setOnClickListener {
             switchFragment(FragmentNavigation.Loading)
-            val input =  (editText as EditText).text.trim().toString()
-            VolleyNetworker.retrieveRestaurants(applicationContext, input, { response ->
+            val input = editText.text?.trim().toString().toLowerCase(Locale.US)
+            val hint = editText.hint.toString().toLowerCase(Locale.US)
+            VolleyNetworker.retrieveRestaurants(applicationContext, hint, input, { response ->
                 val appState = applicationContext as CostcoApplication
                 appState.findRestaurantsResponse = response
                 switchFragment(FragmentNavigation.Results)
@@ -30,6 +29,7 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
                 Log.d("TestTest", "$volleyError")
             })
         }
+        switchFragment(FragmentNavigation.Home)
     }
 
     override fun onBackPressed() {
@@ -48,19 +48,20 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
                 if (supportFragmentManager.backStackEntryCount > 1)
                     supportFragmentManager.popBackStack()
             }
-            FragmentNavigation.Search -> {
-                transaction.replace(R.id.container, SearchFragment.newInstance())
-                transaction.addToBackStack(SearchFragment.NAME)
+            FragmentNavigation.Home -> {
+                transaction.replace(R.id.container, HomeFragment.newInstance())
+                transaction.addToBackStack(HomeFragment.NAME)
             }
             FragmentNavigation.Results -> {
                 transaction.replace(R.id.container, ResultsFragment.newInstance())
                 transaction.addToBackStack(ResultsFragment.NAME)
             }
             is FragmentNavigation.Detailed -> {
+                val name = RestaurantDetailedFragment.NAME
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 transaction.setCustomAnimations(0, 0, R.anim.enter_from_left, R.anim.exit_to_left)
                 transaction.replace(R.id.container, RestaurantDetailedFragment.newInstance(navigation.id))
-                transaction.addToBackStack(RestaurantDetailedFragment.NAME)
+                transaction.addToBackStack(name)
             }
             FragmentNavigation.Error -> {
                 transaction.replace(R.id.container, ErrorFragment.newInstance())
@@ -83,10 +84,10 @@ class MainActivity : AppCompatActivity(), ResultsFragment.OnRestaurantSelectedLi
 }
 
 sealed class FragmentNavigation {
-    object Search : FragmentNavigation()
     object Results : FragmentNavigation()
     data class Detailed(val id: Int) : FragmentNavigation()
     object Error : FragmentNavigation()
     object Loading : FragmentNavigation()
     object Back : FragmentNavigation()
+    object Home: FragmentNavigation()
 }

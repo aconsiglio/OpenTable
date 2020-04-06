@@ -5,7 +5,7 @@ import com.example.costcoproject.Networker.FindRestaurantsResponse
 import com.example.costcoproject.Networker.RestaurantEntry
 
 class CostcoApplication : MultiDexApplication() {
-    var restaurants = listOf<RestaurantEntry>()
+    var restaurants = mutableListOf<RestaurantEntry>()
     var findRestaurantsResponse: FindRestaurantsResponse? = null
 
     init {
